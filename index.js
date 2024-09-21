@@ -164,13 +164,6 @@ function finishGame(deckIsEmpty) {
       } else rl.close();
     });
   } else {
-    // const playerOneScore = players[0].cards.reduce((total, card) => {
-    //   return total + card.value;
-    // }, 0);
-    // const playerTwoScore = players[1].cards.reduce((total, card) => {
-    //   return total + card.value;
-    // }, 0);
-
     const [playerOneScore, playerTwoScore] = calculatePlayersScore();
 
     console.log("                  ");
