@@ -94,6 +94,100 @@ function board() {
   console.log("   ");
 }
 
+function logCardReplacing(playerNumber, cardNumber, drawnCard) {
+  console.log("   ");
+  console.log(
+    `Replacing ${
+      players[playerNumber].isShown[(cardNumber > 4 ? 4 : cardNumber) - 1]
+        ? `[${
+            players[playerNumber].cards[(cardNumber > 4 ? 4 : cardNumber) - 1]
+              .rank
+          } of ${
+            players[playerNumber].cards[(cardNumber > 4 ? 4 : cardNumber) - 1]
+              .suit
+          }] with [${drawnCard.rank} of ${drawnCard.suit}]`
+        : `[Face Down] card with [${drawnCard.rank} of ${drawnCard.suit}]`
+    }`
+  );
+  console.log("   ");
+}
+
+function replaceCardQuestion(playerNumber, drawnCard, isRepeated = false) {
+  if (isRepeated) {
+    console.log("    ");
+    console.log("You can only change face down card!");
+    console.log("    ");
+  }
+
+  rl.question("Which card you want to replace (1-4): ", (cardNumber) => {
+    discardPile.push(
+      players[playerNumber].cards[(cardNumber > 4 ? 4 : cardNumber) - 1]
+    );
+
+    if (players[playerNumber].isShown[(cardNumber > 4 ? 4 : cardNumber) - 1]) {
+      replaceCardQuestion(playerNumber, drawnCard, true);
+    } else {
+      logCardReplacing(playerNumber, cardNumber, drawnCard);
+
+      players[playerNumber].cards[(cardNumber > 4 ? 4 : cardNumber) - 1] =
+        drawnCard;
+      players[playerNumber].isShown[
+        (cardNumber > 4 ? 4 : cardNumber) - 1
+      ] = true;
+
+      taketurn(playerNumber === 0 ? 1 : 0);
+    }
+  });
+}
+
+function takeAction(playerNumber) {
+  rl.question(
+    "Take an action: 1) Draw from Deck 2) Take from dicard pile: ",
+    (answer) => {
+      if (answer !== "1" && answer !== "2") takeAction();
+      if (answer === "1") {
+        if (deck.length === 0) {
+          console.log("   ");
+          console.log("Deck card is empty! Game Over!");
+          console.log("   ");
+          deckIsEmpty = true;
+          finishGame(deckIsEmpty);
+        } else {
+          const drawnCard = deck.pop();
+          console.log(`Card drawn is ${drawnCard.rank} of ${drawnCard.suit}`);
+          rl.question(
+            "Take an action: 1) Replace it with face down card 2) Throw to discard pile: ",
+            (answer) => {
+              if (answer !== "1" && answer !== "2") {
+                replaceCardQuestion(playerNumber, drawnCard);
+              }
+              if (answer === "1") {
+                replaceCardQuestion(playerNumber, drawnCard);
+              }
+              if (answer === "2") {
+                discardPile.push(drawnCard);
+                taketurn(playerNumber === 0 ? 1 : 0);
+              }
+            }
+          );
+        }
+      }
+      if (answer === "2") {
+        if (discardPile.length === 0) {
+          console.log("         ");
+          console.log("Pile card is empty! Instead take from the deck!");
+          console.log("         ");
+          taketurn(playerNumber);
+        } else {
+          const drawnCard = discardPile.pop();
+
+          replaceCardQuestion(playerNumber, drawnCard);
+        }
+      }
+    }
+  );
+}
+
 function taketurn(playerNumber) {
   const isAllShown =
     players[0].isShown.every((isShown) => isShown === true) ||
