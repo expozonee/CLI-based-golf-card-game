@@ -41,7 +41,7 @@ function createDeck() {
   return deck;
 }
 
-const deck = createDeck();
+let deck = createDeck();
 
 function shuffleDeck(deck) {
   for (let i = 0; i < deck.length; i++) {
@@ -53,10 +53,16 @@ function shuffleDeck(deck) {
 }
 
 shuffleDeck(deck);
+
 let discardPile = [];
 let deckIsEmpty = false;
 
 function startGame() {
+  deck = createDeck();
+  shuffleDeck(deck);
+  discardPile = [];
+  deckIsEmpty = false;
+
   players.forEach((player) => {
     for (let i = 0; i < 4; i++) {
       player.cards.push(deck.pop());
@@ -94,6 +100,61 @@ function board() {
   console.log("   ");
 }
 
+function calculatePlayersScore() {
+  const playerOneCards = players[0].cards;
+  const playerTwoCards = players[1].cards;
+
+  const valuesPlayerOne = playerOneCards.reduce((acc, card) => {
+    if (!acc[card.rank]) {
+      acc[card.rank] = 1;
+      return acc;
+    } else {
+      acc[card.rank] += 1;
+      return acc;
+    }
+  }, {});
+  const valuesPlayerTwo = playerTwoCards.reduce((acc, card) => {
+    if (!acc[card.rank]) {
+      acc[card.rank] = 1;
+      return acc;
+    } else {
+      acc[card.rank] += 1;
+      return acc;
+    }
+  }, {});
+
+  const playerOneScore = Object.entries(valuesPlayerOne).reduce(
+    (acc, score) => {
+      if (score[0] !== "7" && score[0] !== "Jack" && score[1] === 2) {
+        return acc;
+      } else {
+        return (
+          acc +
+          score[1] *
+            players[0].cards.find((card) => card.rank === score[0]).value
+        );
+      }
+    },
+    0
+  );
+  const playerTwoScore = Object.entries(valuesPlayerTwo).reduce(
+    (acc, score) => {
+      if (score[0] !== "7" && score[0] !== "Jack" && score[1] === 2) {
+        return acc + 0;
+      } else {
+        return (
+          acc +
+          score[1] *
+            players[1].cards.find((card) => card.rank === score[0]).value
+        );
+      }
+    },
+    0
+  );
+
+  return [playerOneScore, playerTwoScore];
+}
+
 function finishGame(deckIsEmpty) {
   if (deckIsEmpty) {
     rl.question("Play again? (Y/N) ", (answer) => {
@@ -103,12 +164,14 @@ function finishGame(deckIsEmpty) {
       } else rl.close();
     });
   } else {
-    const playerOneScore = players[0].cards.reduce((total, card) => {
-      return total + card.value;
-    }, 0);
-    const playerTwoScore = players[1].cards.reduce((total, card) => {
-      return total + card.value;
-    }, 0);
+    // const playerOneScore = players[0].cards.reduce((total, card) => {
+    //   return total + card.value;
+    // }, 0);
+    // const playerTwoScore = players[1].cards.reduce((total, card) => {
+    //   return total + card.value;
+    // }, 0);
+
+    const [playerOneScore, playerTwoScore] = calculatePlayersScore();
 
     console.log("                  ");
     console.log("Game Over!");
@@ -255,6 +318,12 @@ function taketurn(playerNumber) {
 function askForNames() {
   shuffleDeck(deck);
   discardPile = [];
+  for (const player of players) {
+    player.cards = [];
+    for (let i = 0; i < player.isShown.length; i++) {
+      player.isShown[i] = false;
+    }
+  }
   rl.question(`First player's name: `, (name) => {
     players[0].name = name;
     rl.question("Second player's name: ", (name) => {
