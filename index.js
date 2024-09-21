@@ -94,6 +94,26 @@ function board() {
   console.log("   ");
 }
 
+function taketurn(playerNumber) {
+  const isAllShown =
+    players[0].isShown.every((isShown) => isShown === true) ||
+    players[1].isShown.every((isShown) => isShown === true);
+
+  board();
+  console.log(`${players[playerNumber].name}'s turn!`);
+
+  if (isAllShown) {
+    for (const player of players) {
+      for (let i = 0; i < player.isShown.length; i++) {
+        player.isShown[i] = true;
+      }
+    }
+    finishGame();
+  } else {
+    takeAction(playerNumber);
+  }
+}
+
 function askForNames() {
   shuffleDeck(deck);
   discardPile = [];
