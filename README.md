@@ -6,6 +6,16 @@ A command-line implementation of a modified golf card game for two players. Test
 
 Welcome to the CLI Golf Card Game! This is a command-line interface (CLI) version of a modified golf card game designed for two players. Each player has a hand of four cards, and the objective is to have the lowest score when the game ends. The game is built using JavaScript and can be run locally on your machine.
 
+## Getting Started
+
+To play the game, clone the repository to your local machine:
+
+```bash
+git clone https://github.com/expozonee/CLI-based-golf-card-game.git
+```
+Navigate to the project directory and follow the instructions to run the game.
+
+
 ## Game Rules
 
 1. **Players:** 2 players.
