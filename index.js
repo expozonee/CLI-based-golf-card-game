@@ -93,3 +93,22 @@ function board() {
   console.log("--------------------");
   console.log("   ");
 }
+
+function askForNames() {
+  shuffleDeck(deck);
+  discardPile = [];
+  rl.question(`First player's name: `, (name) => {
+    players[0].name = name;
+    rl.question("Second player's name: ", (name) => {
+      players[1].name = name;
+      startGame();
+    });
+  });
+}
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+askForNames();
