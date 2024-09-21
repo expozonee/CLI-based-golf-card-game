@@ -94,6 +94,50 @@ function board() {
   console.log("   ");
 }
 
+function finishGame(deckIsEmpty) {
+  if (deckIsEmpty) {
+    rl.question("Play again? (Y/N) ", (answer) => {
+      if (answer.toUpperCase() === "Y") {
+        console.clear();
+        askForNames();
+      } else rl.close();
+    });
+  } else {
+    const playerOneScore = players[0].cards.reduce((total, card) => {
+      return total + card.value;
+    }, 0);
+    const playerTwoScore = players[1].cards.reduce((total, card) => {
+      return total + card.value;
+    }, 0);
+
+    console.log("                  ");
+    console.log("Game Over!");
+    console.log("                  ");
+    board();
+    console.log("                  ");
+    console.log("Final Scores:");
+    console.log(`${players[0].name}: ${playerOneScore}`);
+    console.log(`${players[1].name}: ${playerTwoScore}`);
+    console.log("                  ");
+    console.log(
+      `${
+        playerOneScore < playerTwoScore
+          ? `${players[0].name} is the winner!`
+          : playerTwoScore < playerOneScore
+          ? `${players[1].name} is the winner!`
+          : "Draw!"
+      }`
+    );
+    console.log("                  ");
+    rl.question("Play again? (Y/N) ", (answer) => {
+      if (answer.toUpperCase() === "Y") {
+        console.clear();
+        askForNames();
+      } else rl.close();
+    });
+  }
+}
+
 function logCardReplacing(playerNumber, cardNumber, drawnCard) {
   console.log("   ");
   console.log(
