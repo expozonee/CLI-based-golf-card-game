@@ -104,7 +104,7 @@ function calculatePlayersScore() {
   const playerOneCards = players[0].cards;
   const playerTwoCards = players[1].cards;
 
-  const valuesPlayerOne = playerOneCards.reduce((acc, card) => {
+  const playerOneCardsCount = playerOneCards.reduce((acc, card) => {
     if (!acc[card.rank]) {
       acc[card.rank] = 1;
       return acc;
@@ -113,7 +113,7 @@ function calculatePlayersScore() {
       return acc;
     }
   }, {});
-  const valuesPlayerTwo = playerTwoCards.reduce((acc, card) => {
+  const playerTwoCardCounts = playerTwoCards.reduce((acc, card) => {
     if (!acc[card.rank]) {
       acc[card.rank] = 1;
       return acc;
@@ -123,7 +123,7 @@ function calculatePlayersScore() {
     }
   }, {});
 
-  const playerOneScore = Object.entries(valuesPlayerOne).reduce(
+  const playerOneScore = Object.entries(playerOneCardsCount).reduce(
     (acc, score) => {
       if (score[0] !== "7" && score[0] !== "Jack" && score[1] === 2) {
         return acc;
@@ -137,7 +137,7 @@ function calculatePlayersScore() {
     },
     0
   );
-  const playerTwoScore = Object.entries(valuesPlayerTwo).reduce(
+  const playerTwoScore = Object.entries(playerTwoCardCounts).reduce(
     (acc, score) => {
       if (score[0] !== "7" && score[0] !== "Jack" && score[1] === 2) {
         return acc + 0;
