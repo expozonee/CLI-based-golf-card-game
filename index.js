@@ -1,4 +1,5 @@
 const readline = require("readline");
+var readlineSync = require("readline-sync");
 
 const players = [
   {
@@ -185,12 +186,19 @@ function finishGame(deckIsEmpty) {
       }`
     );
     console.log("                  ");
-    rl.question("Play again? (Y/N) ", (answer) => {
-      if (answer.toUpperCase() === "Y") {
-        console.clear();
-        askForNames();
-      } else rl.close();
-    });
+
+    const playAgain = readlineSync.question("Play again? (Y/N) ");
+    if (playAgain.toUpperCase() === "Y") {
+      console.clear();
+      askForNames();
+    } else rl.close();
+
+    // rl.question("Play again? (Y/N) ", (answer) => {
+    //   if (answer.toUpperCase() === "Y") {
+    //     console.clear();
+    //     askForNames();
+    //   } else rl.close();
+    // });
   }
 }
 
