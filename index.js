@@ -1,5 +1,4 @@
-const readline = require("readline");
-var readlineSync = require("readline-sync");
+const readlineSync = require("readline-sync");
 
 const players = [
   {
@@ -156,14 +155,17 @@ function calculatePlayersScore() {
   return [playerOneScore, playerTwoScore];
 }
 
+function playAgain() {
+  const playAgain = readlineSync.keyInYN("Play again? ");
+  if (playAgain) {
+    console.clear();
+    askForNames();
+  } else process.exit();
+}
+
 function finishGame(deckIsEmpty) {
   if (deckIsEmpty) {
-    rl.question("Play again? (Y/N) ", (answer) => {
-      if (answer.toUpperCase() === "Y") {
-        console.clear();
-        askForNames();
-      } else rl.close();
-    });
+    playAgain();
   } else {
     const [playerOneScore, playerTwoScore] = calculatePlayersScore();
 
@@ -187,18 +189,7 @@ function finishGame(deckIsEmpty) {
     );
     console.log("                  ");
 
-    const playAgain = readlineSync.question("Play again? (Y/N) ");
-    if (playAgain.toUpperCase() === "Y") {
-      console.clear();
-      askForNames();
-    } else rl.close();
-
-    // rl.question("Play again? (Y/N) ", (answer) => {
-    //   if (answer.toUpperCase() === "Y") {
-    //     console.clear();
-    //     askForNames();
-    //   } else rl.close();
-    // });
+    playAgain();
   }
 }
 
@@ -227,73 +218,72 @@ function replaceCardQuestion(playerNumber, drawnCard, isRepeated = false) {
     console.log("    ");
   }
 
-  rl.question("Which card you want to replace (1-4): ", (cardNumber) => {
-    discardPile.push(
-      players[playerNumber].cards[(cardNumber > 4 ? 4 : cardNumber) - 1]
-    );
+  const cardNumber = readlineSync.question(
+    "Which card you want to replace (1-4): "
+  );
 
-    if (players[playerNumber].isShown[(cardNumber > 4 ? 4 : cardNumber) - 1]) {
-      replaceCardQuestion(playerNumber, drawnCard, true);
-    } else {
-      logCardReplacing(playerNumber, cardNumber, drawnCard);
+  discardPile.push(
+    players[playerNumber].cards[(cardNumber > 4 ? 4 : cardNumber) - 1]
+  );
 
-      players[playerNumber].cards[(cardNumber > 4 ? 4 : cardNumber) - 1] =
-        drawnCard;
-      players[playerNumber].isShown[
-        (cardNumber > 4 ? 4 : cardNumber) - 1
-      ] = true;
+  if (players[playerNumber].isShown[(cardNumber > 4 ? 4 : cardNumber) - 1]) {
+    replaceCardQuestion(playerNumber, drawnCard, true);
+  } else {
+    logCardReplacing(playerNumber, cardNumber, drawnCard);
 
-      taketurn(playerNumber === 0 ? 1 : 0);
-    }
-  });
+    players[playerNumber].cards[(cardNumber > 4 ? 4 : cardNumber) - 1] =
+      drawnCard;
+    players[playerNumber].isShown[(cardNumber > 4 ? 4 : cardNumber) - 1] = true;
+
+    taketurn(playerNumber === 0 ? 1 : 0);
+  }
 }
 
 function takeAction(playerNumber) {
-  rl.question(
-    "Take an action: 1) Draw from Deck 2) Take from dicard pile: ",
-    (answer) => {
-      if (answer !== "1" && answer !== "2") takeAction();
-      if (answer === "1") {
-        if (deck.length === 0) {
-          console.log("   ");
-          console.log("Deck card is empty! Game Over!");
-          console.log("   ");
-          deckIsEmpty = true;
-          finishGame(deckIsEmpty);
-        } else {
-          const drawnCard = deck.pop();
-          console.log(`Card drawn is ${drawnCard.rank} of ${drawnCard.suit}`);
-          rl.question(
-            "Take an action: 1) Replace it with face down card 2) Throw to discard pile: ",
-            (answer) => {
-              if (answer !== "1" && answer !== "2") {
-                replaceCardQuestion(playerNumber, drawnCard);
-              }
-              if (answer === "1") {
-                replaceCardQuestion(playerNumber, drawnCard);
-              }
-              if (answer === "2") {
-                discardPile.push(drawnCard);
-                taketurn(playerNumber === 0 ? 1 : 0);
-              }
-            }
-          );
-        }
-      }
-      if (answer === "2") {
-        if (discardPile.length === 0) {
-          console.log("         ");
-          console.log("Pile card is empty! Instead take from the deck!");
-          console.log("         ");
-          taketurn(playerNumber);
-        } else {
-          const drawnCard = discardPile.pop();
+  let action = readlineSync.question(
+    "Take an action: 1) Draw from Deck 2) Take from dicard pile: "
+  );
 
-          replaceCardQuestion(playerNumber, drawnCard);
-        }
+  if (action !== "1" && action !== "2") takeAction();
+  if (action === "1") {
+    if (deck.length === 0) {
+      console.log("   ");
+      console.log("Deck card is empty! Game Over!");
+      console.log("   ");
+      deckIsEmpty = true;
+      finishGame(deckIsEmpty);
+    } else {
+      const drawnCard = deck.pop();
+      console.log(`Card drawn is ${drawnCard.rank} of ${drawnCard.suit}`);
+
+      let secondAction = readlineSync.question(
+        "Take an action: 1) Replace it with face down card 2) Throw to discard pile: "
+      );
+
+      if (secondAction !== "1" && secondAction !== "2") {
+        replaceCardQuestion(playerNumber, drawnCard);
+      }
+      if (secondAction === "1") {
+        replaceCardQuestion(playerNumber, drawnCard);
+      }
+      if (secondAction === "2") {
+        discardPile.push(drawnCard);
+        taketurn(playerNumber === 0 ? 1 : 0);
       }
     }
-  );
+  }
+  if (action === "2") {
+    if (discardPile.length === 0) {
+      console.log("         ");
+      console.log("Pile card is empty! Instead take from the deck!");
+      console.log("         ");
+      taketurn(playerNumber);
+    } else {
+      const drawnCard = discardPile.pop();
+
+      replaceCardQuestion(playerNumber, drawnCard);
+    }
+  }
 }
 
 function taketurn(playerNumber) {
@@ -325,18 +315,16 @@ function askForNames() {
       player.isShown[i] = false;
     }
   }
-  rl.question(`First player's name: `, (name) => {
-    players[0].name = name;
-    rl.question("Second player's name: ", (name) => {
-      players[1].name = name;
-      startGame();
-    });
-  });
-}
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+  let playerOneName = readlineSync.question("First player's name: ");
+  if (playerOneName) {
+    players[0].name = playerOneName;
+    let playerTwoName = readlineSync.question("Second player's name: ");
+    if (playerTwoName) {
+      players[1].name = playerTwoName;
+      startGame();
+    }
+  }
+}
 
 askForNames();
