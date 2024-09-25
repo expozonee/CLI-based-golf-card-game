@@ -13,7 +13,13 @@ To play the game, clone the repository to your local machine:
 ```bash
 git clone https://github.com/expozonee/CLI-based-golf-card-game.git
 ```
-Navigate to the project directory and follow the instructions to run the game.
+Navigate to the project directory and run the following command:
+
+```bash
+npm i
+```
+
+and follow the instructions to run the game.
 
 
 ## Game Rules
